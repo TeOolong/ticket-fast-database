@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  tickets-fast-db:
+    image: ${db_image}
+    container_name: ${db_container}
+    command: >
+      bash -c "
+      chmod 644 /etc/mysql/conf.d/*.cnf
+      && /entrypoint.sh mysqld
+      "
+    restart: unless-stopped
+    tty: true
+    user: root
+    ports:
+      - "${db_external_port}:3306"
+    environment:
+      MYSQL_DATABASE: TICKET_FAST
+      MYSQL_ROOT_PASSWORD: root
+      TZ: America/Lima
+    volumes:
+      - "${db_direc}/config/my-mysql.cnf:/etc/mysql/conf.d/my.cnf"
+      - "${db_direc}/config/scripts:/docker-entrypoint-initdb.d"
+      - "${db_direc}/work/database/db:/var/lib/mysql/"
+      - "${db_direc}/work/database/log:/var/log/mysql"
